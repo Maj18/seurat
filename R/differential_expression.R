@@ -318,34 +318,34 @@ FindConservedMarkers <- function(
           ") vs (",
           paste(ident.2, collapse = ", "),
           ")"
+        )}
+    
+      ident.use.2.exists <- ident.use.2 %in% Idents(object = object)
+      if (!all(ident.use.2.exists)) {
+        bad.ids <- ident.2[!ident.use.2.exists]
+        warning(
+          "Identity: ",
+          paste(bad.ids, collapse = ", "),
+          " not present in group ",
+          level.use,
+          ". Skipping ",
+          level.use,
+          call. = FALSE,
+          immediate. = TRUE
         )
-    }
-    }
-    ident.use.2.exists <- ident.use.2 %in% Idents(object = object)
-    if (!all(ident.use.2.exists)) {
-      bad.ids <- ident.2[!ident.use.2.exists]
-      warning(
-        "Identity: ",
-        paste(bad.ids, collapse = ", "),
-        " not present in group ",
-        level.use,
-        ". Skipping ",
-        level.use,
-        call. = FALSE,
-        immediate. = TRUE
+        next
+      }
+      marker.test[[i]] <- FindMarkers(
+        object = object,
+        assay = assay,
+        slot = slot,
+        ident.1 = ident.use.1,
+        ident.2 = ident.use.2,
+        verbose = verbose,
+        ...
       )
-      next
+      names(x = marker.test)[i] <- levels.split[i]
     }
-    marker.test[[i]] <- FindMarkers(
-      object = object,
-      assay = assay,
-      slot = slot,
-      ident.1 = ident.use.1,
-      ident.2 = ident.use.2,
-      verbose = verbose,
-      ...
-    )
-    names(x = marker.test)[i] <- levels.split[i]
   }
   marker.test <- Filter(f = Negate(f = is.null), x = marker.test)
   genes.conserved <- Reduce(
