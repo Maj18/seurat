@@ -281,43 +281,45 @@ FindConservedMarkers <- function(
   for (i in 1:num.groups) {
     level.use <- levels.split[i]
     ident.use.1 <- paste(ident.1, level.use, sep = "_")
-    ident.use.1.exists <- ident.use.1 %in% Idents(object = object)
-    if (!all(ident.use.1.exists)) {
-      bad.ids <- ident.1[!ident.use.1.exists]
-      warning(
-        "Identity: ",
-        paste(bad.ids, collapse = ", "),
-        " not present in group ",
-        level.use,
-        ". Skipping ",
-        level.use,
-        call. = FALSE,
-        immediate. = TRUE
-      )
-      next
-    }
-    ident.2 <- ident.2.save
-    cells.1 <- WhichCells(object = object, idents = ident.use.1)
-    if (is.null(x = ident.2)) {
-      cells.2 <- setdiff(x = cells[[i]], y = cells.1)
-      ident.use.2 <- names(x = which(x = table(Idents(object = object)[cells.2]) > 0))
-      ident.2 <- gsub(pattern = paste0("_", level.use), replacement = "", x = ident.use.2)
-      if (length(x = ident.use.2) == 0) {
-        stop(paste("Only one identity class present:", ident.1))
+    if (sum(Idents(object = object)==ident.use.1) >= 3) {
+      ident.use.1.exists <- ident.use.1 %in% Idents(object = object)
+      if (!all(ident.use.1.exists)) {
+        bad.ids <- ident.1[!ident.use.1.exists]
+        warning(
+          "Identity: ",
+          paste(bad.ids, collapse = ", "),
+          " not present in group ",
+          level.use,
+          ". Skipping ",
+          level.use,
+          call. = FALSE,
+          immediate. = TRUE
+        )
+        next
       }
-    } else {
-      ident.use.2 <- paste(ident.2, level.use, sep = "_")
+      ident.2 <- ident.2.save
+      cells.1 <- WhichCells(object = object, idents = ident.use.1)
+      if (is.null(x = ident.2)) {
+        cells.2 <- setdiff(x = cells[[i]], y = cells.1)
+        ident.use.2 <- names(x = which(x = table(Idents(object = object)[cells.2]) > 0))
+        ident.2 <- gsub(pattern = paste0("_", level.use), replacement = "", x = ident.use.2)
+        if (length(x = ident.use.2) == 0) {
+          stop(paste("Only one identity class present:", ident.1))
+        }
+      } else {
+        ident.use.2 <- paste(ident.2, level.use, sep = "_")
+      }
+      if (verbose) {
+        message(
+          "Testing group ",
+          level.use,
+          ": (",
+          paste(ident.1, collapse = ", "),
+          ") vs (",
+          paste(ident.2, collapse = ", "),
+          ")"
+        )
     }
-    if (verbose) {
-      message(
-        "Testing group ",
-        level.use,
-        ": (",
-        paste(ident.1, collapse = ", "),
-        ") vs (",
-        paste(ident.2, collapse = ", "),
-        ")"
-      )
     }
     ident.use.2.exists <- ident.use.2 %in% Idents(object = object)
     if (!all(ident.use.2.exists)) {
@@ -559,6 +561,7 @@ FindMarkers.default <- function(
       latent.vars <- latent.vars[c(cells.1, cells.2), , drop = FALSE]
     }
   }
+  
   de.results <- PerformDE(
     object = object,
     cells.1 = cells.1,
