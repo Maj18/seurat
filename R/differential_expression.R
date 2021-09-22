@@ -1940,14 +1940,14 @@ ValidateCellGroups <- function(
   min.cells.group
 ) {
   if (length(x = cells.1) == 0) {
-    stop("Cell group 1 is empty - no cells with identity class ", cells.1)
+    print("Cell group 1 is empty - no cells with identity class ", cells.1)
   } else if (length(x = cells.2) == 0) {
-    stop("Cell group 2 is empty - no cells with identity class ", cells.2)
+    print("Cell group 2 is empty - no cells with identity class ", cells.2)
     return(NULL)
   } else if (length(x = cells.1) < min.cells.group) {
-    stop("Cell group 1 has fewer than ", min.cells.group, " cells")
+    print("Cell group 1 has fewer than ", min.cells.group, " cells")
   } else if (length(x = cells.2) < min.cells.group) {
-    stop("Cell group 2 has fewer than ", min.cells.group, " cells")
+    print("Cell group 2 has fewer than ", min.cells.group, " cells")
   } else if (any(!cells.1 %in% colnames(x = object))) {
     bad.cells <- colnames(x = object)[which(x = !as.character(x = cells.1) %in% colnames(x = object))]
     stop(
